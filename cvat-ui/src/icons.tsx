@@ -23,6 +23,7 @@ import SVGGroupIcon from './assets/group-icon.svg';
 import SVGSplitIcon from './assets/split-icon.svg';
 import SVGMainMenuIcon from './assets/main-menu-icon.svg';
 import SVGSaveIcon from './assets/save-icon.svg';
+import SVGInfoIcon from './assets/info-icon.svg';
 import SVGUndoIcon from './assets/undo-icon.svg';
 import SVGRedoIcon from './assets/redo-icon.svg';
 import SVGFirstIcon from './assets/first-icon.svg';
@@ -106,6 +107,7 @@ export const ForwardJumpIcon = React.memo((): JSX.Element => <SVGForwardJumpIcon
 export const LastIcon = React.memo((): JSX.Element => <SVGLastIcon />);
 export const FullscreenIcon = React.memo((): JSX.Element => <SVGFullscreenIcon />);
 export const ObjectOutsideIcon = React.memo((): JSX.Element => <SVGObjectOutsideIcon />);
+export const InfoIcon = React.memo((): JSX.Element => <SVGInfoIcon />);
 export const BackgroundIcon = React.memo((): JSX.Element => <SVGBackgroundIcon />);
 export const ForegroundIcon = React.memo((): JSX.Element => <SVGForegroundIcon />);
 export const CubeIcon = React.memo((): JSX.Element => <SVGCubeIcon />);

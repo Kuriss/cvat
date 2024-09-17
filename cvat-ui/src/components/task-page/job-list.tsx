@@ -29,7 +29,7 @@ const FilteringComponent = ResourceFilterHOC(
 
 interface Props {
     task: Task;
-    onJobUpdate(job: Job, data: Parameters<Job['save']>[0]): void;
+    onUpdateJob(job: Job, data: Parameters<Job['save']>[0]): void;
 }
 
 const PAGE_SIZE = 10;
@@ -63,7 +63,7 @@ function setUpJobsList(jobs: Job[], query: JobsQuery): Job[] {
 }
 
 function JobListComponent(props: Props): JSX.Element {
-    const { task: taskInstance, onJobUpdate } = props;
+    const { task: taskInstance, onUpdateJob } = props;
     const [visibility, setVisibility] = useState(defaultVisibility);
 
     const history = useHistory();
@@ -87,14 +87,7 @@ function JobListComponent(props: Props): JSX.Element {
     const filteredJobs = setUpJobsList(jobs, query);
     const jobViews = filteredJobs
         .slice((query.page - 1) * PAGE_SIZE, query.page * PAGE_SIZE)
-        .map((job: Job) => (
-            <JobItem
-                key={job.id}
-                job={job}
-                task={taskInstance}
-                onJobUpdate={onJobUpdate}
-            />
-        ));
+        .map((job: Job) => <JobItem key={job.id} job={job} task={taskInstance} onJobUpdate={onUpdateJob} />);
     useEffect(() => {
         history.replace({
             search: updateHistoryFromQuery(query),

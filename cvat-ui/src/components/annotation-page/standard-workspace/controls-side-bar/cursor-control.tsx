@@ -16,6 +16,7 @@ import { ShortcutScope } from 'utils/enums';
 import { registerComponentShortcuts } from 'actions/shortcuts-actions';
 import { subKeyMap } from 'utils/component-subkeymap';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
     canvasInstance: Canvas | Canvas3d;
@@ -38,6 +39,7 @@ function CursorControl(props: Props): JSX.Element {
     const {
         canvasInstance, activeControl, cursorShortkey,
     } = props;
+    const { t: tAnnotationControl } = useTranslation('annotation', { keyPrefix: 'control' });
 
     const { keyMap } = useSelector((state: CombinedState) => state.shortcuts);
 
@@ -60,7 +62,7 @@ function CursorControl(props: Props): JSX.Element {
                 keyMap={subKeyMap(componentShortcuts, keyMap)}
                 handlers={handlers}
             />
-            <CVATTooltip title={`Cursor ${cursorShortkey}`} placement='right'>
+            <CVATTooltip title={`${tAnnotationControl('Cursor')} ${cursorShortkey}`} placement='right'>
                 <Icon
                     component={CursorIcon}
                     className={

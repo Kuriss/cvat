@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { compose } from 'redux';
 import { Redirect, Route, Switch } from 'react-router';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Col, Row } from 'antd/lib/grid';
@@ -20,6 +21,11 @@ import LoginPageContainer from 'containers/login-page/login-page';
 import RegisterPageContainer from 'containers/register-page/register-page';
 import ResetPasswordPageConfirmComponent from 'components/reset-password-confirm-page/reset-password-confirm-page';
 import ResetPasswordPageComponent from 'components/reset-password-page/reset-password-page';
+
+import i18n from '../i18n';
+import {
+    withTranslation, WithTranslation, Trans, Translation,
+} from 'react-i18next';
 
 import Header from 'components/header/header';
 import GlobalErrorBoundary from 'components/global-error-boundary/global-error-boundary';
@@ -81,7 +87,6 @@ import EmailVerificationSentPage from './email-confirmation-pages/email-verifica
 import IncorrectEmailConfirmationPage from './email-confirmation-pages/incorrect-email-confirmation';
 import CreateJobPage from './create-job-page/create-job-page';
 import AnalyticsPage from './analytics-page/analytics-page';
-import QualityControlPage from './quality-control/quality-control-page';
 import InvitationWatcher from './invitation-watcher/invitation-watcher';
 
 interface CVATAppProps {
@@ -130,8 +135,8 @@ interface CVATAppState {
     healthIinitialized: boolean;
     backendIsHealthy: boolean;
 }
-class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentProps, CVATAppState> {
-    constructor(props: CVATAppProps & RouteComponentProps) {
+class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentProps & WithTranslation, CVATAppState> {
+    constructor(props: CVATAppProps & RouteComponentProps & WithTranslation) {
         super(props);
 
         this.state = {
@@ -142,9 +147,9 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
 
     public componentDidMount(): void {
         const core = getCore();
-        const { history, location, onChangeLocation } = this.props;
+        const { history, location, onChangeLocation, t } = this.props;
         const {
-            HEALTH_CHECK_RETRIES, HEALTH_CHECK_PERIOD, HEALTH_CHECK_REQUEST_TIMEOUT,
+            HEALTH_CHECK_RETRIES, HEALTH_CHECK_PERIOD, HEALTH_CHECK_REQUEST_TIMEOUT,UPGRADE_GUIDE_URL,
             SERVER_UNAVAILABLE_COMPONENT, RESET_NOTIFICATIONS_PATHS,
         } = appConfig;
 
@@ -205,13 +210,31 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
                 });
 
                 Modal.error({
-                    title: 'Cannot connect to the server',
+                    title: <Trans i18nKey='app.modal-cannot-connect-server.title'>Cannot connect to the server</Trans>,
                     className: 'cvat-modal-cannot-connect-server',
                     closable: false,
                     content:
-    <Text>
-        {SERVER_UNAVAILABLE_COMPONENT}
-    </Text>,
+                    (
+                        <Text>
+                            <Trans i18nKey='app.modal-cannot-connect-server.content'>
+                                Make sure the CVAT backend and all necessary services
+                                <br />
+                                (Database, Redis and Open Policy Agent) are running and available.
+                                <br />
+                                If you upgraded from version 2.2.0 or earlier, manual actions may be needed,
+                                <br />
+                                see the&nbsp;
+                            </Trans>
+                            <a
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href={UPGRADE_GUIDE_URL}
+                            >
+                                {t('Upgrade Guide')}
+                            </a>
+                            .
+                        </Text>
+                    ),
                 });
             });
 
@@ -221,28 +244,76 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
 
         if (showPlatformNotification()) {
             stopNotifications(false);
+            // Modal.warning({
+            //     title: 'Unsupported platform detected',
+            //     className: 'cvat-modal-unsupported-platform-warning',
+            //     content: (
+            //         <>
+            //             <Row>
+            //                 <Col>
+            //                     <Text>
+            //                         {`The browser you are using is ${name} ${version} based on ${engine}.` +
+            //                             ' CVAT was tested in the latest versions of Chrome and Firefox.' +
+            //                             ' We recommend to use Chrome (or another Chromium based browser)'}
+            //                     </Text>
+            //                 </Col>
+            //             </Row>
+            //             <Row>
+            //                 <Col>
+            //                     <Text type='secondary'>{`The operating system is ${os}`}</Text>
+            //                 </Col>
+            //             </Row>
+            //         </>
+            //     ),
             Modal.warning({
-                title: 'Unsupported platform detected',
+                title: <Translation>{() => t('app.modal-unsupported-platform-warning.title')}</Translation>,
                 className: 'cvat-modal-unsupported-platform-warning',
                 content: (
                     <>
                         <Row>
                             <Col>
                                 <Text>
-                                    {`The browser you are using is ${name} ${version} based on ${engine}.` +
-                                        ' CVAT was tested in the latest versions of Chrome and Firefox.' +
-                                        ' We recommend to use Chrome (or another Chromium based browser)'}
+                                    <Translation>
+                                        {() => (
+                                            <Trans i18nKey='app.modal-unsupported-platform-warning.content'>
+                                                The browser you are using is
+                                                {' '}
+                                                {{ name }}
+                                                {' '}
+                                                {{ version }}
+                                                based on
+                                                {' '}
+                                                {{ engine }}
+.
+                                                <wbr />
+                                                CVAT was tested in the latest versions of Chrome and Firefox.
+                                                <wbr />
+                                                We recommend to use Chrome (or another Chromium based browser)
+                                            </Trans>
+                                        )}
+                                    </Translation>
                                 </Text>
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <Text type='secondary'>{`The operating system is ${os}`}</Text>
+                                <Text type='secondary'>
+                                    <Translation>
+                                        {() => t(
+                                            'app.modal-unsupported-platform-warning.secondary',
+                                            {
+                                                defaultValue: 'The operating system is {{os}}',
+                                                os,
+                                            },
+                                        )}
+                                    </Translation>
+                                </Text>
                             </Col>
                         </Row>
                     </>
                 ),
                 onOk: () => stopNotifications(true),
+
             });
         } else if (showUnsupportedNotification()) {
             stopNotifications(false);
@@ -463,6 +534,7 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
             isModelPluginActive,
             isPasswordResetEnabled,
             isRegistrationEnabled,
+            t,
         } = this.props;
 
         const { healthIinitialized, backendIsHealthy } = this.state;
@@ -476,13 +548,18 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
                 pluginsInitialized &&
                 aboutInitialized &&
                 organizationInitialized &&
-                (!isModelPluginActive || modelsInitialized)
+                (!isModelPluginActive || modelsInitialized) &&
+                i18n.isInitialized
             )
         );
 
         const routesToRender = pluginComponents.router
             .filter(({ data: { shouldBeRendered } }) => shouldBeRendered(this.props, this.state))
             .map(({ component: Component }) => Component());
+
+        const loggedInModals = pluginComponents.loggedInModals
+            .filter(({ data: { shouldBeRendered } }) => shouldBeRendered(this.props, this.state))
+            .map(({ component: Component }) => Component);
 
         const queryParams = new URLSearchParams(location.search);
         const authParams = authQuery(queryParams);
@@ -508,7 +585,6 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
                                         <Route exact path='/tasks/create' component={CreateTaskPageContainer} />
                                         <Route exact path='/tasks/:id' component={TaskPageComponent} />
                                         <Route exact path='/tasks/:tid/analytics' component={AnalyticsPage} />
-                                        <Route exact path='/tasks/:tid/quality-control' component={QualityControlPage} />
                                         <Route exact path='/tasks/:id/jobs/create' component={CreateJobPage} />
                                         <Route exact path='/tasks/:id/guide' component={AnnotationGuidePage} />
                                         <Route exact path='/tasks/:tid/jobs/:jid' component={AnnotationPageContainer} />
@@ -560,6 +636,9 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
                                     <ImportBackupModal />
                                     <InvitationWatcher />
                                     <UploadFileStatusModal />
+                                    { loggedInModals.map((Component, idx) => (
+                                        <Component key={idx} targetProps={this.props} targetState={this.state} />
+                                    ))}
                                     {/* eslint-disable-next-line */}
                                     <a id='downloadAnchor' target='_blank' style={{ display: 'none' }} download />
                                 </Layout.Content>
@@ -617,4 +696,4 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
     }
 }
 
-export default withRouter(CVATApplication);
+export default compose(withRouter, withTranslation())(CVATApplication);

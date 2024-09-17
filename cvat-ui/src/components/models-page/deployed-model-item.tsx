@@ -87,10 +87,7 @@ export default function DeployedModelItem(props: Props): JSX.Element {
                 />
                 { modelTopBar }
                 <div className='cvat-model-info-container'>
-                    <Title level={3}>
-                        {model.provider !== ModelProviders.CVAT && `#${model.id}: `}
-                        {model.name}
-                    </Title>
+                    <Title level={3}>{model.name}</Title>
                     {modelDescription}
                 </div>
                 <Divider />
@@ -160,7 +157,6 @@ export default function DeployedModelItem(props: Props): JSX.Element {
                 <Meta
                     title={(
                         <Text ellipsis={{ tooltip: model.name }} onClick={onOpenModel} className='cvat-models-item-title' aria-hidden>
-                            {model.provider !== ModelProviders.CVAT && `#${model.id}: `}
                             {model.name}
                         </Text>
                     )}

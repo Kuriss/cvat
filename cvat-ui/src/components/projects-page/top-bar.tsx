@@ -10,12 +10,12 @@ import { Row, Col } from 'antd/lib/grid';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
 import Input from 'antd/lib/input';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, LoadingOutlined  } from '@ant-design/icons';
 import { importActions } from 'actions/import-actions';
 import { usePrevious } from 'utils/hooks';
 import { ProjectsQuery } from 'reducers';
 import { SortingComponent, ResourceFilterHOC, defaultVisibility } from 'components/resource-sorting-filtering';
-
+import { useTranslation } from 'react-i18next';
 import dimensions from 'utils/dimensions';
 import {
     localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues, config,
@@ -40,6 +40,8 @@ function TopBarComponent(props: Props): JSX.Element {
     } = props;
     const [visibility, setVisibility] = useState(defaultVisibility);
     const prevImporting = usePrevious(importing);
+    const { t } = useTranslation();
+    const { t: tProjectTopBar } = useTranslation('project', { keyPrefix: 'top-bar' });
 
     useEffect(() => {
         if (prevImporting && !importing) {
@@ -59,7 +61,7 @@ function TopBarComponent(props: Props): JSX.Element {
                         }}
                         defaultValue={query.search || ''}
                         className='cvat-projects-page-search-bar'
-                        placeholder='Search ...'
+                        placeholder={t('$t(Search)...')}
                     />
                     <div>
                         <SortingComponent
@@ -103,7 +105,7 @@ function TopBarComponent(props: Props): JSX.Element {
                                     onClick={(): void => history.push('/projects/create')}
                                     icon={<PlusOutlined />}
                                 >
-                                    Create a new project
+                                    {tProjectTopBar('Create a new project')}
                                 </Button>
                                 <Button
                                     className='cvat-import-project-button'
@@ -112,7 +114,8 @@ function TopBarComponent(props: Props): JSX.Element {
                                     icon={<UploadOutlined />}
                                     onClick={() => dispatch(importActions.openImportBackupModal('project'))}
                                 >
-                                    Create from backup
+                                    {tProjectTopBar('Create from backup')}
+                                    {importing && <LoadingOutlined className='cvat-import-project-button-loading' />}
                                 </Button>
                             </div>
                         )}

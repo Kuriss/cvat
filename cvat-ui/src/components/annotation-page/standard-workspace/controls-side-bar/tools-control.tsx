@@ -23,7 +23,7 @@ import notification from 'antd/lib/notification';
 import message from 'antd/lib/message';
 import Switch from 'antd/lib/switch';
 import lodash, { omit } from 'lodash';
-
+import { Translation } from 'react-i18next';
 import { AIToolsIcon } from 'icons';
 import { Canvas, convertShapesForInteractor } from 'cvat-canvas-wrapper';
 import {
@@ -454,7 +454,11 @@ export class ToolsControlComponent extends React.PureComponent<Props, State> {
         } catch (error: any) {
             notification.error({
                 description: <CVATMarkdown>{error.message}</CVATMarkdown>,
-                message: 'Interaction error occurred',
+                message:(
+                    <Translation ns='annotation' keyPrefix='Tools'>
+                        {(tAnnoTools) => tAnnoTools('Interaction error occurred')}
+                    </Translation>
+                ),
                 duration: null,
             });
         }
@@ -548,7 +552,11 @@ export class ToolsControlComponent extends React.PureComponent<Props, State> {
         } catch (error: any) {
             notification.error({
                 description: <CVATMarkdown>{error.message}</CVATMarkdown>,
-                message: 'Tracking error occurred',
+                message: (
+                    <Translation ns='annotation' keyPrefix='Tools'>
+                        {(tAnnoTools) => tAnnoTools('Tracking error occurred')}
+                    </Translation>
+                ),
                 duration: null,
             });
         }
@@ -988,7 +996,9 @@ export class ToolsControlComponent extends React.PureComponent<Props, State> {
                 <Row justify='center' align='middle' style={{ marginTop: '5px' }}>
                     <Col>
                         <Text type='warning' className='cvat-text-color'>
-                            No available trackers found
+                            <Translation ns='annotation' keyPrefix='Tools'>
+                                {(tAnnoTools) => tAnnoTools('No available trackers found')}
+                            </Translation>
                         </Text>
                     </Col>
                 </Row>
@@ -1367,7 +1377,11 @@ export class ToolsControlComponent extends React.PureComponent<Props, State> {
                     } catch (error: any) {
                         notification.error({
                             description: <CVATMarkdown>{error.message}</CVATMarkdown>,
-                            message: 'Detection error occurred',
+                            message: (
+                                <Translation ns='annotation' keyPrefix='Tools'>
+                                    {(tAnnoTools) => tAnnoTools('Detection error occurred')}
+                                </Translation>
+                            ),
                             duration: null,
                         });
                     } finally {
@@ -1380,42 +1394,46 @@ export class ToolsControlComponent extends React.PureComponent<Props, State> {
 
     private renderPopoverContent(): JSX.Element {
         return (
-            <div className='cvat-tools-control-popover-content'>
-                <Row justify='start'>
-                    <Col>
-                        <Text className='cvat-text-color' strong>
-                            AI Tools
-                        </Text>
-                    </Col>
-                </Row>
-                <Tabs
-                    type='card'
-                    tabBarGutter={8}
-                    items={[{
-                        key: 'interactors',
-                        label: 'Interactors',
-                        children: (
-                            <>
-                                {this.renderLabelBlock()}
-                                {this.renderInteractorBlock()}
-                            </>
-                        ),
-                    }, {
-                        key: 'detectors',
-                        label: 'Detectors',
-                        children: this.renderDetectorBlock(),
-                    }, {
-                        key: 'trackers',
-                        label: 'Trackers',
-                        children: (
-                            <>
-                                {this.renderLabelBlock()}
-                                {this.renderTrackerBlock()}
-                            </>
-                        ),
-                    }]}
-                />
-            </div>
+            <Translation ns='annotation' keyPrefix='Tools'>
+                {(tAnnoTools) => (
+                    <div className='cvat-tools-control-popover-content'>
+                        <Row justify='start'>
+                            <Col>
+                                <Text className='cvat-text-color' strong>
+                                    {tAnnoTools('AI Tools')}
+                                </Text>
+                            </Col>
+                        </Row>
+                        <Tabs
+                            type='card'
+                            tabBarGutter={8}
+                            items={[{
+                                key: 'interactors',
+                                label: tAnnoTools('Interactors'),
+                                children: (
+                                    <>
+                                        {this.renderLabelBlock()}
+                                        {this.renderInteractorBlock()}
+                                    </>
+                                ),
+                            }, {
+                                key: 'detectors',
+                                label: tAnnoTools('Detectors'),
+                                children: this.renderDetectorBlock(),
+                            }, {
+                                key: 'trackers',
+                                label: tAnnoTools('Trackers'),
+                                children: (
+                                    <>
+                                        {this.renderLabelBlock()}
+                                        {this.renderTrackerBlock()}
+                                    </>
+                                ),
+                            }]}
+                        />
+                    </div>
+                )}
+            </Translation>
         );
     }
 
@@ -1462,17 +1480,21 @@ export class ToolsControlComponent extends React.PureComponent<Props, State> {
         ) : null;
 
         const detectionContent: JSX.Element | null = showDetectionContent ? (
-            <Modal
-                title='Making a server request'
-                zIndex={Number.MAX_SAFE_INTEGER}
-                open
-                destroyOnClose
-                closable={false}
-                footer={[]}
-            >
-                <Text>Waiting for a server response..</Text>
-                <LoadingOutlined style={{ marginLeft: '10px' }} />
-            </Modal>
+            <Translation ns='annotation' keyPrefix='Tools'>
+                {(tAnnoTools) => (
+                    <Modal
+                        title={tAnnoTools('Making a server request')}
+                        zIndex={Number.MAX_SAFE_INTEGER}
+                        open
+                        destroyOnClose
+                        closable={false}
+                        footer={[]}
+                    >
+                        <Text>{tAnnoTools('Waiting for a server response..')}</Text>
+                        <LoadingOutlined style={{ marginLeft: '10px' }} />
+                    </Modal>
+                )}
+            </Translation>
         ) : null;
 
         return showAnyContent ? (

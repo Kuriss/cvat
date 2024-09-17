@@ -32,10 +32,8 @@ interface InputElementParameters {
 
 const componentShortcuts: Record<string, KeyMapItem> = {};
 
-const makeKey = (index: number) => `AAM_SET_ATTR_VALUE_${index}`;
-
 for (const idx of Array.from({ length: 10 }, (_, i) => i)) {
-    componentShortcuts[makeKey(idx)] = {
+    componentShortcuts[`SET_${idx}_VALUE`] = {
         name: `Set ${idx + 1} value to the current attribute`,
         description: `Change current value for the attribute to the ${idx + 1} value in the list`,
         sequences: [`${idx}`],
@@ -211,10 +209,7 @@ interface ListProps {
 
 function AttrValuesList(props: ListProps): JSX.Element | null {
     const { inputType, values, onChange } = props;
-
     const { keyMap } = useSelector((state: CombinedState) => state.shortcuts);
-    const { normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
-
     const sortedValues = ['true', 'false'];
     const filteredValues = values.filter((value: string): boolean => value !== config.UNDEFINED_ATTRIBUTE_VALUE);
     const prevValuesRef = useRef<string[] | null>(null);
@@ -230,16 +225,15 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
                 };
                 return acc;
             }, {});
-
-            let valuesWithShortcuts = sortedValues;
+            let processedValues = sortedValues;
             if (inputType === 'checkbox' && values[0].toLowerCase() !== 'true') {
-                valuesWithShortcuts = [...sortedValues].reverse();
+                processedValues = [...sortedValues].reverse();
             } else if (inputType === 'radio' || inputType === 'select') {
-                valuesWithShortcuts = filteredValues.slice(0, 10);
+                processedValues = filteredValues.slice(0, 10);
             }
 
-            valuesWithShortcuts.forEach((value: string, index: number): void => {
-                const key = makeKey(index);
+            processedValues.forEach((value: string, index: number): void => {
+                const key = `SET_${index}_VALUE`;
                 updatedComponentShortcuts[key] = {
                     ...updatedComponentShortcuts[key],
                     nonActive: false,
@@ -247,7 +241,6 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
                     description: `Change current value for the attribute to ${value}`,
                 };
             });
-
             registerComponentShortcuts({ ...updatedComponentShortcuts });
             prevValuesRef.current = values;
         }
@@ -259,7 +252,7 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
         } = {};
 
         sortedValues.forEach((value: string, index: number): void => {
-            const key = makeKey(index);
+            const key = `SET_${index}_VALUE`;
             handlers[key] = (event: KeyboardEvent | undefined) => {
                 if (event) {
                     event.preventDefault();
@@ -269,23 +262,17 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
             };
         });
 
-        const key0 = makeKey(0);
-        const key1 = makeKey(1);
         return (
             <div className='attribute-annotation-sidebar-attr-list-wrapper'>
                 <GlobalHotKeys keyMap={subKeyMap(componentShortcuts, keyMap)} handlers={handlers} />
-                {keyMap[key0]?.sequences?.length > 0 && (
-                    <div>
-                        <Text strong>{`${normalizedKeyMap[key0]}: `}</Text>
-                        <Text>{` ${sortedValues[0]}`}</Text>
-                    </div>
-                )}
-                {keyMap[key1]?.sequences?.length > 0 && (
-                    <div>
-                        <Text strong>{`${normalizedKeyMap[key1]}: `}</Text>
-                        <Text>{` ${sortedValues[1]}`}</Text>
-                    </div>
-                )}
+                <div>
+                    <Text strong>0:</Text>
+                    <Text>{` ${sortedValues[0]}`}</Text>
+                </div>
+                <div>
+                    <Text strong>1:</Text>
+                    <Text>{` ${sortedValues[1]}`}</Text>
+                </div>
             </div>
         );
     }
@@ -296,7 +283,7 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
         } = {};
 
         filteredValues.slice(0, 10).forEach((value: string, index: number): void => {
-            const key = makeKey(index);
+            const key = `SET_${index}_VALUE`;
             handlers[key] = (event: KeyboardEvent | undefined) => {
                 if (event) {
                     event.preventDefault();
@@ -310,19 +297,12 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
             <div className='attribute-annotation-sidebar-attr-list-wrapper'>
                 <GlobalHotKeys keyMap={subKeyMap(componentShortcuts, keyMap)} handlers={handlers} />
                 {filteredValues.map(
-                    (value: string, index: number): JSX.Element | null => {
-                        const key = makeKey(index);
-                        if (keyMap[key]?.sequences?.length) {
-                            return (
-                                <div key={value}>
-                                    <Text strong>{`${normalizedKeyMap[key]}: `}</Text>
-                                    <Text>{` ${value}`}</Text>
-                                </div>
-                            );
-                        }
-
-                        return null;
-                    },
+                    (value: string, index: number): JSX.Element => (
+                        <div key={value}>
+                            <Text strong>{`${index}:`}</Text>
+                            <Text>{` ${value}`}</Text>
+                        </div>
+                    ),
                 )}
             </div>
         );

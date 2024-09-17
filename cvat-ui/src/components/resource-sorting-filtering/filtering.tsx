@@ -19,7 +19,32 @@ import Menu from 'antd/lib/menu';
 import { useSelector } from 'react-redux';
 import { CombinedState } from 'reducers';
 import { User } from 'cvat-core-wrapper';
-
+import { useTranslation } from 'react-i18next';
+import i18next from '../../i18n';
+i18next.on('languageChanged', (lng: string) => {
+    const res = i18next.getResourceBundle(lng, 'translation');
+    const qbRes = res.QbUtils as
+    Record<
+    'settings' | 'conjunctions' | 'operators',
+    Record<string, string>
+    >;
+    if (!qbRes) {
+        return;
+    }
+    const config = AntdConfig;
+    Object.entries(qbRes.settings).forEach(([k, v]) => {
+        // @ts-ignore;
+        config.settings[k] = v;
+    });
+    Object.entries(qbRes.conjunctions).forEach(([k, v]) => {
+        // @ts-ignore;
+        config.conjunctions[k].label = v;
+    });
+    Object.entries(qbRes.operators).forEach(([k, v]) => {
+        // @ts-ignore;
+        config.operators[k].label = v;
+    });
+});
 interface ResourceFilterProps {
     predefinedVisible?: boolean;
     recentVisible: boolean;
@@ -119,7 +144,7 @@ export default function ResourceFilterHOC(
             onPredefinedVisibleChange, onBuilderVisibleChange, onRecentVisibleChange, onApplyFilter,
             disabled,
         } = props;
-
+        const { t: tFilter } = useTranslation('filter');
         const user = useSelector((state: CombinedState) => state.auth.user);
         const [isMounted, setIsMounted] = useState<boolean>(false);
         const [recentFilters, setRecentFilters] = useState<Record<string, string>>({});
@@ -245,7 +270,7 @@ export default function ResourceFilterHOC(
                                 type='default'
                                 onClick={() => onPredefinedVisibleChange(!predefinedVisible)}
                             >
-                                Quick filters
+                                {tFilter('Quick filters')}
                                 { appliedFilter.predefined ?
                                     <FilterFilled /> :
                                     <FilterOutlined />}
@@ -306,7 +331,7 @@ export default function ResourceFilterHOC(
                                             () => onRecentVisibleChange(!recentVisible)
                                         }
                                     >
-                                        Recent
+                                        {tFilter('Recent')}
                                         <DownOutlined />
                                     </Button>
                                 </Popover>
@@ -334,7 +359,7 @@ export default function ResourceFilterHOC(
                                         });
                                     }}
                                 >
-                                    Reset
+                                    {tFilter('Reset')}
                                 </Button>
                                 <Button
                                     className='cvat-apply-filters-button'
@@ -353,7 +378,7 @@ export default function ResourceFilterHOC(
                                         });
                                     }}
                                 >
-                                    Apply
+                                    {tFilter('Apply')}
                                 </Button>
                             </Space>
                         </div>
@@ -365,7 +390,7 @@ export default function ResourceFilterHOC(
                         type='default'
                         onClick={() => onBuilderVisibleChange(!builderVisible)}
                     >
-                        Filter
+                        {tFilter('Filter')}
                         { appliedFilter.built || appliedFilter.recent ?
                             <FilterFilled /> :
                             <FilterOutlined />}
@@ -378,7 +403,7 @@ export default function ResourceFilterHOC(
                     type='link'
                     onClick={() => { setAppliedFilter({ ...defaultAppliedFilter }); }}
                 >
-                    Clear filters
+                    {tFilter('Clear filters')}
                 </Button>
             </div>
         );

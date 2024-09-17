@@ -19,7 +19,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import Empty from 'antd/lib/empty';
 import Input from 'antd/lib/input';
 import notification from 'antd/lib/notification';
-
+import { useTranslation } from 'react-i18next';
 import { getCore, Project, Task } from 'cvat-core-wrapper';
 import { CombinedState, Indexable } from 'reducers';
 import { getProjectTasksAsync } from 'actions/projects-actions';
@@ -53,6 +53,8 @@ export default function ProjectPageComponent(): JSX.Element {
     const id = +useParams<ParamType>().id;
     const dispatch = useDispatch();
     const history = useHistory();
+    const { t } = useTranslation();
+    const { t: tError } = useTranslation('error');
 
     const [projectInstance, setProjectInstance] = useState<Project | null>(null);
     const [fechingProject, setFetchingProject] = useState(true);
@@ -74,7 +76,7 @@ export default function ProjectPageComponent(): JSX.Element {
             updatedQuery.page = updatedQuery.page ? +updatedQuery.page : 1;
         }
     }
-
+    const ARG_TYPE_OBJ = { type: t('type.Project') };
     useEffect(() => {
         if (Number.isInteger(id)) {
             core.projects.get({ id })
@@ -86,7 +88,8 @@ export default function ProjectPageComponent(): JSX.Element {
                 }).catch((error: Error) => {
                     if (mounted.current) {
                         notification.error({
-                            message: 'Could not receive the requested project from the server',
+                            // message: 'Could not receive the requested project from the server',
+                            message: tError('Could not receive the requested _type from the server', ARG_TYPE_OBJ),
                             description: error.toString(),
                         });
                     }
@@ -97,8 +100,8 @@ export default function ProjectPageComponent(): JSX.Element {
                 });
         } else {
             notification.error({
-                message: 'Could not receive the requested project from the server',
-                description: `Requested project id "${id}" is not valid`,
+                message: tError('Could not receive the requested _type from the server', ARG_TYPE_OBJ),
+                description: tError('Requested _type id _id is not valid', { type: t('type.Project'), id }),
             });
             setFetchingProject(false);
         }
@@ -130,9 +133,11 @@ export default function ProjectPageComponent(): JSX.Element {
             <Result
                 className='cvat-not-found'
                 status='404'
-                title='There was something wrong during getting the project'
-                subTitle='Please, be sure, that information you tried to get exist and you are eligible to access it'
-            />
+                // title='There was something wrong during getting the project'
+                // subTitle='Please, be sure, that information you tried to get exist and you are eligible to access it'
+                title={tError('There was something wrong during getting the _type', ARG_TYPE_OBJ)}
+                subTitle={tError('Please, be sure, that information you tried to get exist and you are eligible to access it')}
+           />
         );
     }
 
@@ -176,7 +181,8 @@ export default function ProjectPageComponent(): JSX.Element {
             </Row>
         </>
     ) : (
-        <Empty description='No tasks found' />
+        // <Empty description='No tasks found' />
+        <Empty description={tError('No _types found', { types: t('type.Tasks') })} />
     );
 
     return (
@@ -231,7 +237,8 @@ export default function ProjectPageComponent(): JSX.Element {
                                 }}
                                 defaultValue={tasksQuery.search || ''}
                                 className='cvat-project-page-tasks-search-bar'
-                                placeholder='Search ...'
+                                // placeholder='Search ...'
+                                placeholder={t('$t(Search) ...')}
                             />
                             <div>
                                 <SortingComponent
@@ -291,7 +298,8 @@ export default function ProjectPageComponent(): JSX.Element {
                                         className='cvat-create-task-button'
                                         onClick={() => history.push(`/tasks/create?projectId=${id}`)}
                                     >
-                                        Create a new task
+                                        {/* Create a new task */}
+                                        {tError('create a new _type', { type: t('type.Task') })}
                                     </Button>
                                     <Button
                                         type='primary'
@@ -299,7 +307,8 @@ export default function ProjectPageComponent(): JSX.Element {
                                         className='cvat-create-multi-tasks-button'
                                         onClick={() => history.push(`/tasks/create?projectId=${id}&many=true`)}
                                     >
-                                        Create multi tasks
+                                        {/* Create multi tasks */}
+                                        {tError('create multi _types', { types: t('type.Tasks') })}
                                     </Button>
                                 </CvatDropdownMenuPaper>
                             )}

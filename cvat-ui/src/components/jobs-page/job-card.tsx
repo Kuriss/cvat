@@ -4,18 +4,16 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import Card from 'antd/lib/card';
 import Descriptions from 'antd/lib/descriptions';
 import { MoreOutlined } from '@ant-design/icons';
 import Dropdown from 'antd/lib/dropdown';
-
+import { useTranslation } from 'react-i18next';
 import { Job } from 'cvat-core-wrapper';
 import { useCardHeightHOC } from 'utils/hooks';
 import Preview from 'components/common/preview';
 import JobActionsMenu from 'components/job-item/job-actions-menu';
-import { CombinedState } from 'reducers';
 
 const useCardHeight = useCardHeightHOC({
     containerClassName: 'cvat-jobs-page',
@@ -27,14 +25,11 @@ const useCardHeight = useCardHeightHOC({
 
 interface Props {
     job: Job;
+    onJobUpdate: (job: Job, fields: Parameters<Job['save']>[0]) => void;
 }
 
 function JobCardComponent(props: Props): JSX.Element {
-    const { job } = props;
-
-    const deletes = useSelector((state: CombinedState) => state.jobs.activities.deletes);
-    const deleted = job.id in deletes ? deletes[job.id] === true : false;
-
+    const { job, onJobUpdate } = props;
     const history = useHistory();
     const height = useCardHeight();
     const onClick = (event: React.MouseEvent): void => {
@@ -45,16 +40,10 @@ function JobCardComponent(props: Props): JSX.Element {
             history.push(url);
         }
     };
-
-    const style = {};
-    if (deleted) {
-        (style as any).pointerEvents = 'none';
-        (style as any).opacity = 0.5;
-    }
-
+    const { t } = useTranslation();
     return (
         <Card
-            style={{ ...style, height }}
+            style={{ height }}
             className='cvat-job-page-list-item'
             cover={(
                 <>
@@ -85,7 +74,7 @@ function JobCardComponent(props: Props): JSX.Element {
             <Dropdown
                 trigger={['click']}
                 destroyPopupOnHide
-                overlay={(<JobActionsMenu job={job} />)}
+                overlay={<JobActionsMenu onJobUpdate={onJobUpdate} job={job} />}
             >
                 <MoreOutlined className='cvat-job-card-more-button' />
             </Dropdown>

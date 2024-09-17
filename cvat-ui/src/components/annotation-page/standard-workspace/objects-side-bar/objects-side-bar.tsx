@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import Tabs from 'antd/lib/tabs';
 import Layout from 'antd/lib/layout';
-
+import { useTranslation } from 'react-i18next';
 import { CombinedState } from 'reducers';
 import { DimensionType } from 'cvat-core-wrapper';
 import LabelsList from 'components/annotation-page/standard-workspace/objects-side-bar/labels-list';
@@ -57,6 +57,7 @@ function ObjectsSideBar(props: StateToProps & DispatchToProps & OwnProps): JSX.E
     const {
         sidebarCollapsed, collapseSidebar, objectsList, jobInstance,
     } = props;
+    const { t } = useTranslation();
 
     const collapse = (): void => {
         const [collapser] = window.document.getElementsByClassName('cvat-objects-sidebar');
@@ -100,14 +101,14 @@ function ObjectsSideBar(props: StateToProps & DispatchToProps & OwnProps): JSX.E
                 className='cvat-objects-sidebar-tabs'
                 items={[{
                     key: 'objects',
-                    label: 'Objects',
+                    label: t('Objects'),
                     children: objectsList,
                 }, {
                     key: 'labels',
-                    label: 'Labels',
+                    label: t('Labels'),
                     forceRender: true,
                     children: <LabelsList />,
-                }, ...(is2D ? [{ key: 'issues', label: 'Issues', children: <IssuesListComponent /> }] : [])]}
+                }, ...(is2D ? [{ key: 'issues', label: t('Issues'), children: <IssuesListComponent /> }] : [])]}
             />
             {!sidebarCollapsed && <AppearanceBlock />}
         </Layout.Sider>

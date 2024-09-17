@@ -10,6 +10,7 @@ import { DimensionType, CVATCore } from 'cvat-core-wrapper';
 import Menu, { MenuInfo } from 'components/dropdown-menu';
 import { usePlugins } from 'utils/hooks';
 import { CombinedState } from 'reducers';
+import { useTranslation } from 'react-i18next';
 
 type AnnotationFormats = Awaited<ReturnType<CVATCore['server']['formats']>>;
 
@@ -34,7 +35,6 @@ export enum Actions {
     OPEN_BUG_TRACKER = 'open_bug_tracker',
     BACKUP_TASK = 'backup_task',
     VIEW_ANALYTICS = 'view_analytics',
-    QUALITY_CONTROL = 'quality_control',
 }
 
 function ActionsMenuComponent(props: Props): JSX.Element {
@@ -45,7 +45,8 @@ function ActionsMenuComponent(props: Props): JSX.Element {
         inferenceIsActive,
         onClickMenu,
     } = props;
-
+    const { t } = useTranslation();
+    const { t: tTaskActions } = useTranslation('task', { keyPrefix: 'actions' });
     const plugins = usePlugins((state: CombinedState) => state.plugins.components.taskActions.items, props);
 
     const onClickMenuWrapper = useCallback(
@@ -56,8 +57,10 @@ function ActionsMenuComponent(props: Props): JSX.Element {
 
             if (params.key === Actions.DELETE_TASK) {
                 Modal.confirm({
-                    title: `The task ${taskID} will be deleted`,
-                    content: 'All related data (images, annotations) will be lost. Continue?',
+                    // title: `The task ${taskID} will be deleted`,
+                    // content: 'All related data (images, annotations) will be lost. Continue?',
+                    title: t('deleteModal.title', { item: `${t('type.Task')} ${taskID}` }),
+                    content: t('deleteModal.content', { data: `${t('type.Images')}, ${t('type.Annotations')}` }),
                     className: 'cvat-modal-confirm-delete-task',
                     onOk: () => {
                         onClickMenu(params);
@@ -66,7 +69,8 @@ function ActionsMenuComponent(props: Props): JSX.Element {
                         type: 'primary',
                         danger: true,
                     },
-                    okText: 'Delete',
+                    // okText: 'Delete',
+                    okText: t('Delete'),
                 });
             } else {
                 onClickMenu(params);
@@ -77,22 +81,22 @@ function ActionsMenuComponent(props: Props): JSX.Element {
 
     const menuItems: [JSX.Element, number][] = [];
     menuItems.push([(
-        <Menu.Item key={Actions.LOAD_TASK_ANNO}>Upload annotations</Menu.Item>
+        <Menu.Item key={Actions.LOAD_TASK_ANNO}>{tTaskActions('Upload annotations')}</Menu.Item>
     ), 0]);
 
     menuItems.push([(
-        <Menu.Item key={Actions.EXPORT_TASK_DATASET}>Export task dataset</Menu.Item>
+        <Menu.Item key={Actions.EXPORT_TASK_DATASET}>{tTaskActions('Export task dataset')}</Menu.Item>
     ), 10]);
 
     if (bugTracker) {
         menuItems.push([(
-            <Menu.Item key={Actions.OPEN_BUG_TRACKER}>Open bug tracker</Menu.Item>
+            <Menu.Item key={Actions.OPEN_BUG_TRACKER}>{tTaskActions('Open bug tracker')}</Menu.Item>
         ), 20]);
     }
 
     menuItems.push([(
         <Menu.Item disabled={inferenceIsActive} key={Actions.RUN_AUTO_ANNOTATION}>
-            Automatic annotation
+            {tTaskActions('Automatic annotation')}
         </Menu.Item>
     ), 30]);
 
@@ -108,28 +112,20 @@ function ActionsMenuComponent(props: Props): JSX.Element {
         <Menu.Item
             key={Actions.VIEW_ANALYTICS}
         >
-            View analytics
+            {tTaskActions('View analytics')}
         </Menu.Item>
     ), 50]);
 
-    menuItems.push([(
-        <Menu.Item
-            key={Actions.QUALITY_CONTROL}
-        >
-            Quality control
-        </Menu.Item>
-    ), 60]);
-
     if (projectID === null) {
         menuItems.push([(
-            <Menu.Item key={Actions.MOVE_TASK_TO_PROJECT}>Move to project</Menu.Item>
-        ), 70]);
+            <Menu.Item key={Actions.MOVE_TASK_TO_PROJECT}>{tTaskActions('Move to project')}</Menu.Item>
+        ), 60]);
     }
 
     menuItems.push([(
         <React.Fragment key={Actions.DELETE_TASK}>
             <Menu.Divider />
-            <Menu.Item key={Actions.DELETE_TASK}>Delete</Menu.Item>
+            <Menu.Item key={Actions.DELETE_TASK}>{t('Delete')}</Menu.Item>
         </React.Fragment>
     ), 70]);
 

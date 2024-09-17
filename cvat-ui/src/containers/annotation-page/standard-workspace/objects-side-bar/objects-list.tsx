@@ -276,6 +276,8 @@ function sortAndMap(objectStates: ObjectState[], ordering: StatesOrdering): numb
         sorted = [...objectStates].sort((a: any, b: any): number => b.clientID - a.clientID);
     } else if (ordering === StatesOrdering.UPDATED) {
         sorted = [...objectStates].sort((a: any, b: any): number => b.updated - a.updated);
+    } else if (ordering === StatesOrdering.FRAME_COUNT_DESCENT) {
+        sorted = [...objectStates].sort((a: any, b: any): number => b.frameCount - a.frameCount); // 修改新增的排序逻辑
     } else {
         sorted = [...objectStates].sort((a: any, b: any): number => a.zOrder - b.zOrder);
     }

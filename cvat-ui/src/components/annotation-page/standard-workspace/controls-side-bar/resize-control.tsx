@@ -9,6 +9,7 @@ import { ZoomIcon } from 'icons';
 import { ActiveControl } from 'reducers';
 import { Canvas } from 'cvat-canvas-wrapper';
 import CVATTooltip from 'components/common/cvat-tooltip';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
     canvasInstance: Canvas;
@@ -17,9 +18,10 @@ export interface Props {
 
 function ResizeControl(props: Props): JSX.Element {
     const { activeControl, canvasInstance } = props;
+    const { t: tAnnotationControl } = useTranslation('annotation', { keyPrefix: 'control' });
 
     return (
-        <CVATTooltip title='Select a region of interest' placement='right'>
+        <CVATTooltip title={tAnnotationControl('Select a region of interest')} placement='right'>
             <Icon
                 component={ZoomIcon}
                 className={

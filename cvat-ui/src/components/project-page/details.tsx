@@ -8,6 +8,7 @@ import moment from 'moment';
 import { Row, Col } from 'antd/lib/grid';
 import Title from 'antd/lib/typography/Title';
 import Text from 'antd/lib/typography/Text';
+import { useTranslation } from 'react-i18next';
 
 import { getCore, Project } from 'cvat-core-wrapper';
 import LabelsEditor from 'components/labels-editor/labels-editor';
@@ -25,6 +26,7 @@ interface DetailsComponentProps {
 export default function DetailsComponent(props: DetailsComponentProps): JSX.Element {
     const { project, onUpdateProject } = props;
     const [projectName, setProjectName] = useState(project.name);
+    const { t } = useTranslation();
 
     return (
         <div data-cvat-project-id={project.id} className='cvat-project-details'>
@@ -48,7 +50,8 @@ export default function DetailsComponent(props: DetailsComponentProps): JSX.Elem
             <Row justify='space-between' className='cvat-project-description'>
                 <Col>
                     <Text type='secondary'>
-                        {`Project #${project.id} created`}
+                        {/* {`Project #${project.id} created`} */}
+                        {`${t('type.Project')} #${project.id} ${t('created')}`}
                         {project.owner ? ` by ${project.owner.username}` : null}
                         {` on ${moment(project.createdDate).format('MMMM Do YYYY')}`}
                     </Text>
@@ -62,7 +65,7 @@ export default function DetailsComponent(props: DetailsComponentProps): JSX.Elem
                     />
                 </Col>
                 <Col>
-                    <Text type='secondary'>Assigned to</Text>
+                    <Text type='secondary'>{t('Assigned to')}</Text>
                     <UserSelector
                         value={project.assignee}
                         onSelect={(user) => {

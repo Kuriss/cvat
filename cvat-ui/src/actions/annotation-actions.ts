@@ -480,8 +480,47 @@ export function removeObjectAsync(objectState: ObjectState, force: boolean): Thu
 
             const removed = await objectState.delete(frame, force);
             const history = await jobInstance.actions.get();
+            type FrameCount = [number, number];
 
             if (removed) {
+                const { clientID } = objectState;
+            // 修改，删除对应objectState对应存储的帧数
+            // Delete stored frame counts associated with the objectState
+                const currentUrl = window.location.href;
+                const urlMatch = currentUrl.match(/\/tasks\/(\d+)\/jobs\/(\d+)/);
+                if (urlMatch) {
+                    const taskID = urlMatch[1];
+                    const jobID = urlMatch[2];
+
+                    const oldLocalStorageKey = `${taskID}/${jobID}_frameCounts`;
+                    const newLocalStorageKey = `new_${taskID}/${jobID}_frameCounts`;
+                    const framesLocalStorageKey = `${clientID}_${taskID}/${jobID}_frames`;
+
+                    // 删除上传注释文件中对象的 frameCounts 中对应的 clientID
+                    // Remove the clientID from the frameCounts associated with objects in the uploaded annotation file
+                    let oldFrameCounts = localStorage.getItem(oldLocalStorageKey);
+                    if (oldFrameCounts) {
+                        let parsedOldFrameCounts = JSON.parse(oldFrameCounts) as FrameCount[];
+                        parsedOldFrameCounts = parsedOldFrameCounts.filter(([id]) => id !== clientID);
+                        localStorage.setItem(oldLocalStorageKey, JSON.stringify(parsedOldFrameCounts));
+                        console.log(`Deleted clientID ${clientID} from ${oldLocalStorageKey}`);
+                    }
+
+                    // 删除标注界面新建对象生成的 frameCounts 中对应的 clientID
+                    // Remove the clientID from the frameCounts associated with newly created objects in the annotation interface
+                    let newFrameCounts = localStorage.getItem(newLocalStorageKey);
+                    if (newFrameCounts) {
+                        let parsedNewFrameCounts = JSON.parse(newFrameCounts) as FrameCount[];
+                        parsedNewFrameCounts = parsedNewFrameCounts.filter(([id]) => id !== clientID);
+                        localStorage.setItem(newLocalStorageKey, JSON.stringify(parsedNewFrameCounts));
+                        console.log(`Deleted clientID ${clientID} from ${newLocalStorageKey}`);
+                    }
+
+                    // 删除 frames 中对应的帧数信息
+                    // Remove frame information for the clientID from frames
+                    localStorage.removeItem(framesLocalStorageKey);
+                }
+
                 dispatch({
                     type: AnnotationActionTypes.REMOVE_OBJECT_SUCCESS,
                     payload: {
@@ -1058,10 +1097,10 @@ export function rememberObject(createParams: {
     activeNumOfPoints?: number;
     activeRectDrawingMethod?: RectDrawingMethod;
     activeCuboidDrawingMethod?: CuboidDrawingMethod;
-}, updateCurrentControl = true): AnyAction {
+}): AnyAction {
     return {
         type: AnnotationActionTypes.REMEMBER_OBJECT,
-        payload: { ...createParams, updateCurrentControl },
+        payload: createParams,
     };
 }
 

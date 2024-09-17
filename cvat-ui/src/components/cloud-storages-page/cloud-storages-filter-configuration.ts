@@ -5,6 +5,7 @@
 
 import { Config } from '@react-awesome-query-builder/antd';
 import asyncFetchUsers from 'components/resource-sorting-filtering/request-users';
+import { onLngChangePatchConfig } from '../../i18n';
 
 export const config: Partial<Config> = {
     fields: {
@@ -81,6 +82,7 @@ export const config: Partial<Config> = {
 
 export const localStorageRecentCapacity = 10;
 export const localStorageRecentKeyword = 'recentlyAppliedCloudStoragesFilters';
+onLngChangePatchConfig('filter', 'cloud-storage', config);
 
 export const predefinedFilterValues = {
     'Owned by me': '{"and":[{"==":[{"var":"owner"},"<username>"]}]}',

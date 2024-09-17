@@ -14,6 +14,7 @@ import Button from 'antd/lib/button';
 import notification from 'antd/lib/notification';
 import Tooltip from 'antd/lib/tooltip';
 import { PlayCircleOutlined, LaptopOutlined, BuildOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { setSettings } from 'actions/settings-actions';
 import { shortcutsActions } from 'actions/shortcuts-actions';
@@ -34,6 +35,8 @@ function SettingsModal(props: SettingsModalProps): JSX.Element {
     const settings = useSelector((state: CombinedState) => state.settings);
     const shortcuts = useSelector((state: CombinedState) => state.shortcuts);
     const dispatch = useDispatch();
+    const { t: tHeader } = useTranslation('header');
+    const { t: tHeaderSettings } = useTranslation('header', { keyPrefix: 'settings' });
 
     const onSaveSettings = useCallback(() => {
         const settingsForSaving: any = {
@@ -56,7 +59,7 @@ function SettingsModal(props: SettingsModalProps): JSX.Element {
 
         localStorage.setItem('clientSettings', JSON.stringify(settingsForSaving));
         notification.success({
-            message: 'Settings were successfully saved',
+            message:  tHeaderSettings('Settings were successfully saved'),
             className: 'cvat-notification-notice-save-settings-success',
         });
 
@@ -113,7 +116,7 @@ function SettingsModal(props: SettingsModalProps): JSX.Element {
             }
         } catch {
             notification.error({
-                message: 'Failed to load settings from local storage',
+                message: tHeaderSettings('Failed to load settings from local storage'),
                 className: 'cvat-notification-notice-load-settings-fail',
             });
         }
@@ -121,20 +124,20 @@ function SettingsModal(props: SettingsModalProps): JSX.Element {
 
     return (
         <Modal
-            title='Settings'
+            title={tHeader('Settings')}
             open={visible}
             onCancel={onClose}
             width={800}
             className='cvat-settings-modal'
             footer={(
                 <>
-                    <Tooltip title='Will save settings to restore them after the app is reopened'>
+                    <Tooltip title={tHeaderSettings('Will save settings to restore them after the app is reopened')}>
                         <Button className='cvat-save-settings-button' type='primary' onClick={onSaveSettings}>
-                            Save
+                            {tHeaderSettings('Save')}
                         </Button>
                     </Tooltip>
                     <Button className='cvat-close-settings-button' type='default' onClick={onClose}>
-                        Close
+                        {tHeaderSettings('Close')}
                     </Button>
                 </>
             )}
@@ -148,7 +151,7 @@ function SettingsModal(props: SettingsModalProps): JSX.Element {
                         label: (
                             <span>
                                 <PlayCircleOutlined />
-                                <Text>Player</Text>
+                                <Text>{tHeaderSettings('Player')}</Text>
                             </span>
                         ),
                         children: <PlayerSettingsContainer />,
@@ -157,7 +160,7 @@ function SettingsModal(props: SettingsModalProps): JSX.Element {
                         label: (
                             <span>
                                 <LaptopOutlined />
-                                <Text>Workspace</Text>
+                                <Text>{tHeaderSettings('Workspace')}</Text>
                             </span>
                         ),
                         children: <WorkspaceSettingsContainer />,

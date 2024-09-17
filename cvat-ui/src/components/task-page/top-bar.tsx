@@ -25,9 +25,6 @@ export default function DetailsComponent(props: DetailsComponentProps): JSX.Elem
     const onViewAnalytics = useCallback(() => {
         history.push(`/tasks/${taskInstance.id}/analytics`);
     }, [history]);
-    const onViewQualityControl = (): void => {
-        history.push(`/tasks/${taskInstance.id}/quality-control`);
-    };
 
     return (
         <Row className='cvat-task-top-bar' justify='space-between' align='middle'>
@@ -62,7 +59,6 @@ export default function DetailsComponent(props: DetailsComponentProps): JSX.Elem
                         <ActionsMenuContainer
                             taskInstance={taskInstance}
                             onViewAnalytics={onViewAnalytics}
-                            onViewQualityControl={onViewQualityControl}
                         />
                     )}
                 >

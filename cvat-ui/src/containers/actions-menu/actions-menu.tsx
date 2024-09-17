@@ -21,7 +21,6 @@ import { importActions } from 'actions/import-actions';
 interface OwnProps {
     taskInstance: any;
     onViewAnalytics: () => void;
-    onViewQualityControl: () => void;
 }
 
 interface StateToProps {
@@ -87,7 +86,6 @@ function ActionsMenuContainer(props: OwnProps & StateToProps & DispatchToProps):
         openRunModelWindow,
         openMoveTaskToProjectWindow,
         onViewAnalytics,
-        onViewQualityControl,
     } = props;
     const onClickMenu = (params: MenuInfo): void | JSX.Element => {
         const [action] = params.keyPath;
@@ -107,8 +105,6 @@ function ActionsMenuContainer(props: OwnProps & StateToProps & DispatchToProps):
             showImportModal(taskInstance);
         } else if (action === Actions.VIEW_ANALYTICS) {
             onViewAnalytics();
-        } else if (action === Actions.QUALITY_CONTROL) {
-            onViewQualityControl();
         }
     };
 

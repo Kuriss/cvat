@@ -12,6 +12,7 @@ import Slider from 'antd/lib/slider';
 import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import Collapse from 'antd/lib/collapse';
 import Button from 'antd/lib/button';
+import { useTranslation } from 'react-i18next';
 
 import ColorPicker from 'components/annotation-page/standard-workspace/objects-side-bar/color-picker';
 import { ColorizeIcon } from 'icons';
@@ -127,6 +128,7 @@ function AppearanceBlock(props: Props): JSX.Element {
     } = props;
 
     const is2D = jobInstance.dimension === DimensionType.DIMENSION_2D;
+    const { t: tAnnnotationAppearance } = useTranslation('annotation', { keyPrefix: 'Appearance' });
 
     return (
         <Collapse
@@ -136,13 +138,13 @@ function AppearanceBlock(props: Props): JSX.Element {
             items={[{
                 label: (
                     <Text strong className='cvat-objects-appearance-collapse-header'>
-                        Appearance
+                        {tAnnnotationAppearance('Appearance')}
                     </Text>
                 ),
                 key: 'appearance',
                 children: (
                     <div className='cvat-objects-appearance-content'>
-                        <Text type='secondary'>Color by</Text>
+                        <Text type='secondary'>{tAnnnotationAppearance('Color by')}</Text>
                         <Radio.Group
                             className='cvat-appearance-color-by-radio-group'
                             value={colorBy}
@@ -152,7 +154,7 @@ function AppearanceBlock(props: Props): JSX.Element {
                             <Radio.Button value={ColorBy.INSTANCE}>{ColorBy.INSTANCE}</Radio.Button>
                             <Radio.Button value={ColorBy.GROUP}>{ColorBy.GROUP}</Radio.Button>
                         </Radio.Group>
-                        <Text type='secondary'>Opacity</Text>
+                        <Text type='secondary'>{tAnnnotationAppearance('Opacity')}</Text>
                         <Slider
                             className='cvat-appearance-opacity-slider'
                             onChange={changeShapesOpacity}
@@ -160,7 +162,7 @@ function AppearanceBlock(props: Props): JSX.Element {
                             min={0}
                             max={100}
                         />
-                        <Text type='secondary'>Selected opacity</Text>
+                        <Text type='secondary'>{tAnnnotationAppearance('Selected opacity')}</Text>
                         <Slider
                             className='cvat-appearance-selected-opacity-slider'
                             onChange={changeSelectedShapesOpacity}
@@ -175,7 +177,7 @@ function AppearanceBlock(props: Props): JSX.Element {
                             }}
                             checked={outlined}
                         >
-                            Outlined borders
+                            {tAnnnotationAppearance('Outlined borders')}
                             <ColorPicker
                                 onChange={(color) => changeShapesOutlinedBorders(outlined, color)}
                                 value={outlineColor}
@@ -193,7 +195,7 @@ function AppearanceBlock(props: Props): JSX.Element {
                                 onChange={changeShowBitmap}
                                 checked={showBitmap}
                             >
-                                Show bitmap
+                                {tAnnnotationAppearance('Show bitmap')}
                             </Checkbox>
                         )}
                         {is2D && (
@@ -202,7 +204,7 @@ function AppearanceBlock(props: Props): JSX.Element {
                                 onChange={changeShowProjections}
                                 checked={showProjections}
                             >
-                                Show projections
+                                {tAnnnotationAppearance('Show projections')}
                             </Checkbox>
                         )}
                     </div>

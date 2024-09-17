@@ -4,16 +4,17 @@
 // SPDX-License-Identifier: MIT
 
 import './styles.scss';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import Spin from 'antd/lib/spin';
 import { Col, Row } from 'antd/lib/grid';
 import Pagination from 'antd/lib/pagination';
 
+import { Job } from 'cvat-core-wrapper';
 import { updateHistoryFromQuery } from 'components/resource-sorting-filtering';
 import { CombinedState, Indexable, JobsQuery } from 'reducers';
-import { getJobsAsync } from 'actions/jobs-actions';
+import { getJobsAsync, updateJobAsync } from 'actions/jobs-actions';
 import { anySearch } from 'utils/any-search';
 
 import TopBarComponent from './top-bar';
@@ -27,6 +28,9 @@ function JobsPageComponent(): JSX.Element {
     const query = useSelector((state: CombinedState) => state.jobs.query);
     const fetching = useSelector((state: CombinedState) => state.jobs.fetching);
     const count = useSelector((state: CombinedState) => state.jobs.count);
+    const onJobUpdate = useCallback((job: Job, data: Parameters<Job['save']>[0]) => {
+        dispatch(updateJobAsync(job, data));
+    }, []);
 
     const queryParams = new URLSearchParams(history.location.search);
     const updatedQuery = { ...query };
@@ -54,7 +58,7 @@ function JobsPageComponent(): JSX.Element {
 
     const content = count ? (
         <>
-            <JobsContentComponent />
+            <JobsContentComponent onJobUpdate={onJobUpdate} />
             <Row justify='space-around' about='middle'>
                 <Col md={22} lg={18} xl={16} xxl={16}>
                     <Pagination

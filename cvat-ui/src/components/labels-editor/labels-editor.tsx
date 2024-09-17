@@ -9,6 +9,7 @@ import Tabs from 'antd/lib/tabs';
 import Text from 'antd/lib/typography/Text';
 import modal from 'antd/lib/modal';
 import { EditOutlined, BuildOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Translation } from 'react-i18next';
 
 import { SerializedLabel, SerializedAttribute } from 'cvat-core-wrapper';
 import RawViewer from './raw-viewer';
@@ -267,7 +268,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                     label: (
                         <span>
                             <EditOutlined />
-                            <Text>Raw</Text>
+                            <Text><Translation>{(t) => t('LabelEditor.Raw')}</Translation></Text>
                         </span>
                     ),
                     children: <RawViewer key='raw' labels={savedAndUnsavedLabels} onSubmit={this.handleRawSubmit} />,
@@ -276,7 +277,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                     label: (
                         <span>
                             <BuildOutlined />
-                            <Text>Constructor</Text>
+                            <Text><Translation>{(t) => t('LabelEditor.Constructor')}</Translation></Text>
                         </span>
                     ),
                     children: configuratorContent,

@@ -10,6 +10,7 @@ import { ActiveControl } from 'reducers';
 import { Canvas } from 'cvat-canvas-wrapper';
 import { Canvas3d } from 'cvat-canvas3d-wrapper';
 import CVATTooltip from 'components/common/cvat-tooltip';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
     canvasInstance: Canvas | Canvas3d;
@@ -18,9 +19,10 @@ export interface Props {
 
 function MoveControl(props: Props): JSX.Element {
     const { canvasInstance, activeControl } = props;
+    const { t: tAnnotationControl } = useTranslation('annotation', { keyPrefix: 'control' });
 
     return (
-        <CVATTooltip title='Move the image' placement='right'>
+        <CVATTooltip title={tAnnotationControl('Move the image')} placement='right'>
             <Icon
                 component={MoveIcon}
                 className={

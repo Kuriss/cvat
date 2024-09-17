@@ -14,6 +14,7 @@ import { registerComponentShortcuts } from 'actions/shortcuts-actions';
 import { ShortcutScope } from 'utils/enums';
 import { subKeyMap } from 'utils/component-subkeymap';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
     updateActiveControl(activeControl: ActiveControl): void;
@@ -40,6 +41,7 @@ function JoinControl(props: Props): JSX.Element {
         activeControl,
         disabled,
     } = props;
+    const { t: tAnnotationControl } = useTranslation('annotation', { keyPrefix: 'control' });
 
     const { keyMap, normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
 
@@ -75,7 +77,7 @@ function JoinControl(props: Props): JSX.Element {
                 keyMap={subKeyMap(componentShortcuts, keyMap)}
                 handlers={handlers}
             />
-            <CVATTooltip title={`Join masks ${normalizedKeyMap.SWITCH_JOIN_MODE_STANDARD_CONTROLS}`} placement='right'>
+            <CVATTooltip title={`${tAnnotationControl('Join masks')} ${normalizedKeyMap.SWITCH_JOIN_MODE_STANDARD_CONTROLS}`} placement='right'>
                 <Icon {...dynamicIconProps} component={JoinIcon} />
             </CVATTooltip>
         </>

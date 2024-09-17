@@ -22,6 +22,7 @@ import patterns from 'utils/validation-patterns';
 import LabelsEditor from 'components/labels-editor/labels-editor';
 import SourceStorageField from 'components/storage/source-storage-field';
 import TargetStorageField from 'components/storage/target-storage-field';
+import { useTranslation } from 'react-i18next';
 
 interface AdvancedConfiguration {
     sourceStorage: StorageData;
@@ -53,16 +54,19 @@ function NameConfigurationForm(
     { formRef, inputRef }:
     { formRef: RefObject<FormInstance>, inputRef: RefObject<Input> },
 ):JSX.Element {
+    const { t: tError } = useTranslation('error');
+    const { t: tProjectCreate } = useTranslation('project', { keyPrefix: 'create' });
+
     return (
         <Form layout='vertical' ref={formRef}>
             <Form.Item
                 name='name'
                 hasFeedback
-                label='Name'
+                label={tProjectCreate('Name')}
                 rules={[
                     {
                         required: true,
-                        message: 'Please, specify a name',
+                        message: tError('Please specify a', { type: 'name' }),
                     },
                 ]}
             >
@@ -80,18 +84,21 @@ function AdvancedConfigurationForm(props: AdvancedConfigurationProps): JSX.Eleme
         onChangeSourceStorageLocation,
         onChangeTargetStorageLocation,
     } = props;
+    const { t } = useTranslation();
+    const { t: tProjectCreate } = useTranslation('project', { keyPrefix: 'create' });
+
     return (
         <Form layout='vertical' ref={formRef} initialValues={initialValues}>
             <Form.Item
                 name='bug_tracker'
-                label='Issue tracker'
-                extra='Attach issue tracker where the project is described'
+                label={t('Issue Tracker')}
+                extra={t('Issue Tracker describe')}
                 hasFeedback
                 rules={[
                     {
                         validator: (_, value, callback): void => {
                             if (value && !patterns.validateURL.pattern.test(value)) {
-                                callback('Issue tracker must be URL');
+                                callback(tProjectCreate('issueTracker.must be URL'));
                             } else {
                                 callback();
                             }
@@ -105,7 +112,7 @@ function AdvancedConfigurationForm(props: AdvancedConfigurationProps): JSX.Eleme
                 <Col span={11}>
                     <SourceStorageField
                         instanceId={null}
-                        storageDescription='Specify source storage for import resources like annotation, backups'
+                        storageDescription={tProjectCreate('SourceStorage.describe')}
                         locationValue={sourceStorageLocation}
                         onChangeLocationValue={onChangeSourceStorageLocation}
                     />
@@ -113,7 +120,7 @@ function AdvancedConfigurationForm(props: AdvancedConfigurationProps): JSX.Eleme
                 <Col span={11} offset={1}>
                     <TargetStorageField
                         instanceId={null}
-                        storageDescription='Specify target storage for export resources like annotation, backups'
+                        storageDescription={tProjectCreate('TargetStorage.describe')}
                         locationValue={targetStorageLocation}
                         onChangeLocationValue={onChangeTargetStorageLocation}
                     />
@@ -132,6 +139,8 @@ export default function CreateProjectContent(): JSX.Element {
     const advancedFormRef = useRef<FormInstance>(null);
     const dispatch = useDispatch();
     const history = useHistory();
+    const { t: tProjectCreate } = useTranslation('project', { keyPrefix: 'create' });
+    const { t } = useTranslation();
 
     const resetForm = (): void => {
         if (nameFormRef.current) nameFormRef.current.resetFields();
@@ -186,7 +195,7 @@ export default function CreateProjectContent(): JSX.Element {
         if (res) {
             resetForm();
             notification.info({
-                message: 'The project has been created',
+                message: t('_type has been created', { type: t('type.Project') }),
                 className: 'cvat-notification-create-project-success',
             });
             focusForm();
@@ -203,7 +212,10 @@ export default function CreateProjectContent(): JSX.Element {
                 <NameConfigurationForm formRef={nameFormRef} inputRef={nameInputRef} />
             </Col>
             <Col span={24}>
-                <Text className='cvat-text-color'>Labels:</Text>
+                <Text className='cvat-text-color'>
+                    {tProjectCreate('Labels')}
+                    :
+                </Text>
                 <LabelsEditor
                     labels={projectLabels}
                     onSubmit={(newLabels): void => {

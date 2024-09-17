@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import Autocomplete from 'antd/lib/auto-complete';
 import { SelectValue } from 'antd/lib/select';
+import { useTranslation } from 'react-i18next';
 
 import { getCore } from 'cvat-core-wrapper';
 
@@ -25,7 +26,7 @@ type Project = {
 export default function ProjectSearchField(props: Props): JSX.Element {
     const { value, filter, onSelect } = props;
     const [searchPhrase, setSearchPhrase] = useState('');
-
+    const { t } = useTranslation();
     const [projects, setProjects] = useState<Project[]>([]);
 
     const handleSearch = (searchValue: string): void => {
@@ -88,7 +89,7 @@ export default function ProjectSearchField(props: Props): JSX.Element {
     return (
         <Autocomplete
             value={searchPhrase}
-            placeholder='Select project'
+            placeholder={t('Select _type', { type: t('type.Project') })}
             onSearch={handleSearch}
             onSelect={handleSelect}
             className='cvat-project-search-field'

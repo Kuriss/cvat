@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { CombinedState } from 'reducers';
 import { Canvas3d } from 'cvat-canvas3d-wrapper';
 import { Canvas } from 'cvat-canvas-wrapper';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
     disabled?: boolean;
@@ -25,6 +26,7 @@ function GroupControl(props: Props): JSX.Element {
         dynamicIconProps,
         canvasInstance,
     } = props;
+    const { t: tAnnotationControl } = useTranslation('annotation', { keyPrefix: 'control' });
 
     const { normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
 
@@ -33,7 +35,7 @@ function GroupControl(props: Props): JSX.Element {
         title.push(`Group shapes ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_CONTROLS}`);
         title.push(`Select and press ${normalizedKeyMap.RESET_GROUP_STANDARD_CONTROLS} to reset a group.`);
     } else if (canvasInstance instanceof Canvas3d) {
-        title.push(`Group shapes/tracks ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_3D_CONTROLS}`);
+        title.push(`${tAnnotationControl('Group shapes/tracks')} ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_3D_CONTROLS}`);
         title.push(`Select and press ${normalizedKeyMap.RESET_GROUP_STANDARD_3D_CONTROLS} to reset a group.`);
     }
 

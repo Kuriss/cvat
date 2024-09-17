@@ -8,10 +8,14 @@ import { Row, Col } from 'antd/lib/grid';
 import { MoreOutlined } from '@ant-design/icons';
 import Dropdown from 'antd/lib/dropdown';
 import Text from 'antd/lib/typography/Text';
+import { useSelector } from 'react-redux';
 
-import { ObjectType, ShapeType, ColorBy } from 'reducers';
+import {
+    ObjectType, ShapeType, ColorBy, CombinedState,
+} from 'reducers';
 import CVATTooltip from 'components/common/cvat-tooltip';
 import LabelSelector from 'components/label-selector/label-selector';
+import { ObjectState } from 'cvat-core-wrapper';
 import ItemMenu from './object-item-menu';
 import ColorPicker from './color-picker';
 
@@ -90,10 +94,21 @@ function ItemTopComponent(props: Props): JSX.Element {
 
     const [colorPickerVisible, setColorPickerVisible] = useState(false);
 
+    const states = useSelector((state: CombinedState) => state.annotation.annotations.states);
+    const state = states.find((_state: ObjectState) => _state.clientID === clientID);
+    const { frameCount } = state;
+
     return (
         <Row align='middle'>
             <Col span={10}>
                 <Text style={{ fontSize: 12 }}>{clientID}</Text>
+                {/* 修改，只有当frameCount不为0时显示帧数 */}
+                {frameCount > 0 && (
+                    <Text style={{ fontSize: 12 }}>
+                        {' '}
+                        (帧数: {frameCount})
+                    </Text>
+                )}
                 {isGroundTruth ? <Text style={{ fontSize: 12 }}>&nbsp;GT</Text> : null}
                 <br />
                 <Text

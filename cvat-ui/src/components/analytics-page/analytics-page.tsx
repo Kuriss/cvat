@@ -5,6 +5,7 @@
 import './styles.scss';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Row, Col } from 'antd/lib/grid';
@@ -13,12 +14,15 @@ import Title from 'antd/lib/typography/Title';
 import notification from 'antd/lib/notification';
 import moment from 'moment';
 import { useIsMounted } from 'utils/hooks';
+import { Project, Task } from 'reducers';
 import {
-    AnalyticsReport, Job, Project, RQStatus, Task, getCore,
+    AnalyticsReport, Job, RQStatus, getCore,
 } from 'cvat-core-wrapper';
+import { updateJobAsync } from 'actions/jobs-actions';
 import CVATLoadingSpinner from 'components/common/loading-spinner';
 import GoBackButton from 'components/common/go-back-button';
 import AnalyticsOverview, { DateIntervals } from './analytics-performance';
+import TaskQualityComponent from './task-quality/task-quality-component';
 
 const core = getCore();
 
@@ -76,6 +80,7 @@ function readInstanceId(type: InstanceType): number {
 type InstanceType = 'project' | 'task' | 'job';
 
 function AnalyticsPage(): JSX.Element {
+    const dispatch = useDispatch();
     const location = useLocation();
 
     const requestedInstanceType: InstanceType = readInstanceType(location);
@@ -219,6 +224,15 @@ function AnalyticsPage(): JSX.Element {
         });
     }, [requestedInstanceType, requestedInstanceID, timePeriod]);
 
+    const onJobUpdate = useCallback((job: Job, data: Parameters<Job['save']>[0]): void => {
+        setFetching(true);
+        dispatch(updateJobAsync(job, data)).finally(() => {
+            if (isMounted()) {
+                setFetching(false);
+            }
+        });
+    }, []);
+
     const onTabKeyChange = useCallback((key: string): void => {
         setTab(key as AnalyticsTabs);
     }, []);
@@ -228,11 +242,9 @@ function AnalyticsPage(): JSX.Element {
     let tabs: JSX.Element | null = null;
     if (instanceType && instance) {
         backNavigation = (
-            <Row justify='center'>
-                <Col span={22} xl={18} xxl={14} className='cvat-task-top-bar'>
-                    <GoBackButton />
-                </Col>
-            </Row>
+            <Col span={22} xl={18} xxl={14} className='cvat-task-top-bar'>
+                <GoBackButton />
+            </Col>
         );
 
         let analyticsFor: JSX.Element | null = <Link to={`/projects/${instance.id}`}>{`Project #${instance.id}`}</Link>;
@@ -270,7 +282,12 @@ function AnalyticsPage(): JSX.Element {
                             onCreateReport={onCreateReport}
                         />
                     ),
-                }]}
+                },
+                ...(instanceType === 'task' ? [{
+                    key: AnalyticsTabs.QUALITY,
+                    label: 'Quality',
+                    children: <TaskQualityComponent task={instance} onJobUpdate={onJobUpdate} />,
+                }] : [])]}
             />
         );
     }
@@ -282,15 +299,11 @@ function AnalyticsPage(): JSX.Element {
                     <CVATLoadingSpinner />
                 </div>
             ) : (
-                <Row className='cvat-analytics-wrapper'>
-                    <Col span={24}>
-                        {backNavigation}
-                        <Row justify='center'>
-                            <Col span={22} xl={18} xxl={14} className='cvat-analytics-inner'>
-                                {title}
-                                {tabs}
-                            </Col>
-                        </Row>
+                <Row justify='center' align='top' className='cvat-analytics-wrapper'>
+                    {backNavigation}
+                    <Col span={22} xl={18} xxl={14} className='cvat-analytics-inner'>
+                        {title}
+                        {tabs}
                     </Col>
                 </Row>
             )}

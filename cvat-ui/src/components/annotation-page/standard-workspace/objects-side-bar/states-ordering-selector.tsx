@@ -40,6 +40,10 @@ function StatesOrderingSelectorComponent(props: StatesOrderingSelectorComponentP
                 <Select.Option key={StatesOrdering.Z_ORDER} value={StatesOrdering.Z_ORDER}>
                     {StatesOrdering.Z_ORDER}
                 </Select.Option>
+                {/* 修改 */}
+                <Select.Option key={StatesOrdering.FRAME_COUNT_DESCENT} value={StatesOrdering.FRAME_COUNT_DESCENT}>
+                    {StatesOrdering.FRAME_COUNT_DESCENT}
+                </Select.Option>
             </Select>
         </Col>
     );

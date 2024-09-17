@@ -8,7 +8,7 @@ import { Canvas, RectDrawingMethod, CuboidDrawingMethod } from 'cvat-canvas-wrap
 import {
     Webhook, MLModel, Organization, Job, Task, Project, Label, User,
     QualityConflict, FramesMetaData, RQStatus, Event, Invitation, SerializedAPISchema,
-    Request, TargetMetric,
+    Request,
 } from 'cvat-core-wrapper';
 import { IntelligentScissors } from 'utils/opencv-wrapper/intelligent-scissors';
 import { KeyMap, KeyMapItem } from 'utils/mousetrap-react';
@@ -260,28 +260,6 @@ export interface PluginsState {
             };
         };
     };
-    overridableComponents: {
-        annotationPage: {
-            header: {
-                saveAnnotationButton: (() => JSX.Element)[];
-            };
-        };
-        qualityControlPage: {
-            overviewTab: ((props: {
-                task: Task;
-                targetMetric: TargetMetric;
-            }) => JSX.Element)[];
-
-            allocationTable: ((
-                props: {
-                    task: Task;
-                    gtJob: Job;
-                    gtJobMeta: FramesMetaData;
-                    onDeleteFrames: (frames: number[]) => void;
-                    onRestoreFrames: (frames: number[]) => void;
-                }) => JSX.Element)[];
-        };
-    },
     components: {
         header: {
             userMenu: {
@@ -318,6 +296,11 @@ export interface PluginsState {
         projectItem: {
             ribbon: PluginComponent[];
         };
+        annotationPage: {
+            header: {
+                player: PluginComponent[];
+            };
+        };
         settings: {
             player: PluginComponent[];
         };
@@ -327,6 +310,7 @@ export interface PluginsState {
             };
         };
         router: PluginComponent[];
+        loggedInModals: PluginComponent[];
     }
 }
 
@@ -674,6 +658,7 @@ export enum StatesOrdering {
     ID_ASCENT = 'ID - ascent',
     UPDATED = 'Updated time',
     Z_ORDER = 'Z Order',
+    FRAME_COUNT_DESCENT = 'FRAME_COUNT_DESCENT',//修改
 }
 
 export enum ContextMenuType {

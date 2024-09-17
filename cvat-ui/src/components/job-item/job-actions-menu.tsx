@@ -6,22 +6,24 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import Modal from 'antd/lib/modal';
-
 import { exportActions } from 'actions/export-actions';
+
+import { Job, JobType } from 'cvat-core-wrapper';
 import { deleteJobAsync } from 'actions/jobs-actions';
 import { importActions } from 'actions/import-actions';
-import { Job, JobType } from 'cvat-core-wrapper';
 import Menu, { MenuInfo } from 'components/dropdown-menu';
-
+import { useTranslation } from 'react-i18next';
 interface Props {
     job: Job;
+    onJobUpdate: (job: Job, fields: Parameters<Job['save']>[0]) => void;
 }
 
 function JobActionsMenu(props: Props): JSX.Element {
     const { job } = props;
-
-    const dispatch = useDispatch();
     const history = useHistory();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const { t: tJobActions } = useTranslation(undefined, { keyPrefix: 'job.actions' });
 
     const onDelete = useCallback(() => {
         Modal.confirm({
@@ -35,7 +37,7 @@ function JobActionsMenu(props: Props): JSX.Element {
                 type: 'primary',
                 danger: true,
             },
-            okText: 'Delete',
+            okText: t('Delete'),
         });
     }, [job]);
 
@@ -60,19 +62,19 @@ function JobActionsMenu(props: Props): JSX.Element {
                 }
             }}
         >
-            <Menu.Item key='task' disabled={job.taskId === null}>Go to the task</Menu.Item>
-            <Menu.Item key='project' disabled={job.projectId === null}>Go to the project</Menu.Item>
-            <Menu.Item key='bug_tracker' disabled={!job.bugTracker}>Go to the bug tracker</Menu.Item>
-            <Menu.Item key='import_job'>Import annotations</Menu.Item>
-            <Menu.Item key='export_job'>Export annotations</Menu.Item>
-            <Menu.Item key='view_analytics'>View analytics</Menu.Item>
+            <Menu.Item key='task' disabled={job.taskId === null}>{tJobActions('Go to the task')}</Menu.Item>
+            <Menu.Item key='project' disabled={job.projectId === null}>{tJobActions('Go to the project')}</Menu.Item>
+            <Menu.Item key='bug_tracker' disabled={!job.bugTracker}>{tJobActions('Go to the bug tracker')}</Menu.Item>
+            <Menu.Item key='import_job'>{tJobActions('Import annotations')}</Menu.Item>
+            <Menu.Item key='export_job'>{tJobActions('Export annotations')}</Menu.Item>
+            <Menu.Item key='view_analytics'>{tJobActions('View analytics')}</Menu.Item>
             <Menu.Divider />
             <Menu.Item
                 key='delete'
                 disabled={job.type !== JobType.GROUND_TRUTH}
                 onClick={() => onDelete()}
             >
-                Delete
+                {t('Delete')}
             </Menu.Item>
         </Menu>
     );

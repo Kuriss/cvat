@@ -16,6 +16,7 @@ import { ShortcutScope } from 'utils/enums';
 import { registerComponentShortcuts } from 'actions/shortcuts-actions';
 import { subKeyMap } from 'utils/component-subkeymap';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
     updateActiveControl(activeControl: ActiveControl): void;
@@ -39,6 +40,7 @@ function SliceControl(props: Props): JSX.Element {
     const {
         updateActiveControl, canvasInstance, activeControl, disabled,
     } = props;
+    const { t: tAnnotationControl } = useTranslation('annotation', { keyPrefix: 'control' });
 
     const { keyMap, normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
 
@@ -81,7 +83,7 @@ function SliceControl(props: Props): JSX.Element {
                 keyMap={subKeyMap(componentShortcuts, keyMap)}
                 handlers={handlers}
             />
-            <CVATTooltip title={`Slice a mask/polygon shape ${normalizedKeyMap.SWITCH_SLICE_MODE_STANDARD_CONTROLS}`} placement='right'>
+            <CVATTooltip title={`${tAnnotationControl('Slice a mask/polygon shape')}  ${normalizedKeyMap.SWITCH_SLICE_MODE_STANDARD_CONTROLS}`} placement='right'>
                 <Icon {...dynamicIconProps} component={SliceIcon} />
             </CVATTooltip>
         </>

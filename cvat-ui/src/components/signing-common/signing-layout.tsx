@@ -10,7 +10,8 @@ import { CVATLogo } from 'icons';
 import Icon from '@ant-design/icons';
 import Title from 'antd/lib/typography/Title';
 import SVGSigningBackground from '../../assets/signing-background.svg';
-
+import { Trans } from 'react-i18next';
+import { SwitchLocaleButton } from 'components/switch-locale-button/switch-locale-button';
 interface SignInLayoutComponentProps {
     children: JSX.Element | JSX.Element[];
 }
@@ -81,8 +82,13 @@ function SignInLayout(props: SignInLayoutComponentProps): JSX.Element {
                 <Content>
                     <Row justify='center' align='middle' style={{ height: '100%' }}>
                         <Col {...titleSizes} className='cvat-signing-title'>
-                            <Title>Open Data</Title>
-                            <Title>Annotation Platform</Title>
+                        <Title>
+                                <Trans i18nKey='Open Data Annotation Platform'>
+                                    Open Data
+                                    <br />
+                                    Annotation Platform
+                                </Trans>
+                            </Title>
                         </Col>
                         {children}
                     </Row>

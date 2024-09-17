@@ -470,7 +470,7 @@ function SingleShapeSidebar(): JSX.Element {
                                                 Press
                                                 <Text strong>
                                                     {` ${
-                                                        normalizedKeyMap.CANCEL_SINGLE_SHAPE
+                                                        normalizedKeyMap.CANCEL_SINGLE_SHAPE_CONTROLS
                                                     } `}
                                                 </Text>
                                                 to reset drawing process
